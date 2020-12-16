@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-4.0.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+    <!--声明spring相关配置文件-->
+
+    <!--读取配置文件-->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    <!--1.声明数据源datasource-->
+    <bean id="myDataSource" class="com.alibaba.druid.pool.DruidDataSource"
+          init-method="init" destroy-method="close">
+        <!--SET 注入-->
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="maxActive" value="${jdbc.maxActive}"/>
+    </bean>
+
+    <!--2.SqlSessionFactoryBean创建SqlSessionFactory-->
+    <bean id="sqlsessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--引入数据源-->
+        <property name="dataSource" ref="myDataSource"/>
+        <!--解析配置文件-->
+        <property name="configLocation" value="classpath:mybatis-configs.xml"/>
+    </bean>
+
+    <!--3.声明mybatis扫描器创建dao-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlsessionFactory"/>
+        <property name="basePackage" value="com.ry.settings.dao"/>
+    </bean>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlsessionFactory"/>
+        <property name="basePackage" value="com.ry.workbench.dao"/>
+    </bean>
+    <!--4.声明service注解@service所在的位置-->
+    <!--第一种方式使用注解-->
+    <context:component-scan base-package="com.ry.settings.service"/>
+    <context:component-scan base-package="com.ry.workbench.service"/>
+
+
+    <!--第二种方式用bean标签声明service-->
+<!--    <bean id="buyService" class="com.ry.Service.Impl.BuyGoodServiceImpl">
+            <property name="goodsDao" ref="goodsDao"/>
+            <property name="recordsDao" ref="recordsDao"/>
+            <property name="userDao" ref="userDao"/>
+    </bean>-->
+
+    <!--5.事务配置,aspectj的配置-->
+    <bean id="myTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!-- 连接数据库 指定数据源 -->
+        <property name="dataSource" ref="myDataSource"></property>
+    </bean>
+    <!-- 5.2 开始事物注解驱动 -->
+    <tx:annotation-driven transaction-manager="myTransactionManager"/>
+</beans>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ry.settings.dao.DicValueDao">
+
+<select id="getListByCode" resultType="com.ry.settings.pojo.DicValue">
+   SELECT * FROM tbl_dic_value where typeCode = #{code} order by orderNo
+</select>
+</mapper>

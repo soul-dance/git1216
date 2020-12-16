@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ry.workbench.dao.ActivityReamarkDao">
+    <!-- //查询应该删除留言的条数-->
+    <select id="getCountByAids" resultType="int">
+        select count(*) from tbl_activity_remark
+        where activityId in
+        <foreach collection="array" item="aid" open="(" close=")" separator=",">
+            #{aid}
+        </foreach>
+    </select>
+    
+    <!--批量删除留言-->
+    <delete id="deleteByAids" parameterType="int">
+        delete
+        from tbl_activity_remark
+        where activityId in
+        <foreach collection="array" item="aid" open="(" close=")" separator=",">
+            #{aid}
+        </foreach>
+    </delete>
+
+    <!--getRemarkList 获取当前市场活动留言列表-->
+    <select id="getRemarkList" resultType="ActivityReamark">
+        select * from tbl_activity_remark where activityId = #{id} order by createTime DESC
+    </select>
+
+    <!--删除单条留言-->
+    <delete id="deleteReamark">
+        delete
+        from tbl_activity_remark
+        where id = #{id}
+    </delete>
+
+    <!--添加留言-->
+    <insert id="saveReamrk">
+        insert into tbl_activity_remark(id,noteContent,createTime,createBy,editFlag,activityId)
+        VALUES (#{id},#{noteContent},#{createTime},#{createBy},#{editFlag},#{activityId})
+    </insert>
+
+    <!--更新备注列表-->
+    <update id="updateReamrk">
+        update tbl_activity_remark  set
+            noteContent = #{noteContent},
+            editTime = #{editTime},
+            editBy = #{editBy},
+            editFlag = #{editFlag}
+            where id = #{id}
+    </update>
+</mapper>

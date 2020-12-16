@@ -1,0 +1,21 @@
+			$.ajax({
+				url : "",
+				data : {
+
+				},
+				type:"",
+				dataType : "json",
+				success:function (data) {
+
+				}
+			})
+
+						//设置日历
+            			$(".time").datetimepicker({
+            				minView: "month",
+            				language:  'UTF-8',
+            				format: 'yyyy-mm-dd',
+            				autoclose: true,
+            				todayBtn: true,
+            				pickerPosition: "bottom-left"
+            			});

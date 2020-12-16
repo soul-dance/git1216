@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ry.workbench.dao.CustomerRemarkDao">
+
+    <!--添加留言-->
+    <insert id="save">
+        insert into tbl_customer_remark(
+        id,noteContent,createTime,createBy,editFlag,customerId
+        )
+        VALUES (
+        #{id},#{noteContent},#{createTime},#{createBy},#{editFlag},#{customerId}
+        )
+    </insert>
+  	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

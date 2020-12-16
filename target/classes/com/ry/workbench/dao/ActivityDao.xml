@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ry.workbench.dao.ActivityDao">
+
+    <!--添加市场活动-->
+    <insert id="save" parameterType="Activity">
+        insert into
+        tbl_activity(id,owner,name,startDate,endDate,cost,description,createTime,createBy)
+        values (#{id},#{owner},#{name},#{startDate},#{endDate},#{cost},#{description},#{createTime},#{createBy})
+    </insert>
+
+    <!--查询总记录条数-->
+    <select id="getTotalByCondition" resultType="int">
+        select count(*)
+        from tbl_activity as a
+        inner join tbl_user as u
+        on u.id = a.owner
+        <where>
+            <if test="owner != null and owner != '' ">
+                u.name like '%' #{owner} '%'
+            </if>
+            <if test="name != null and name != '' ">
+                and a.name like '%' #{name} '%'
+            </if>
+            <if test="startDate != null and startDate != '' ">
+                and startDate &gt; #{startDate}
+            </if>
+            <if test="endDate != null and endDate != '' ">
+                and endDate &lt; #{endDate}
+            </if>
+        </where>
+    </select>
+    
+    
+    <!--条件查询市场活动-->
+    <select id="getActivityListCondition" resultType="Activity">
+        select
+            a.id,
+            u.name as owner,
+            a.name,
+            a.startDate,
+            a.endDate
+        from tbl_activity as a
+        inner join tbl_user as u
+        on u.id = a.owner
+        <where>
+            <if test="owner != null and owner !='' ">
+                u.name like '%' #{owner} '%'
+            </if>
+            <if test="name != null and name != '' ">
+                and a.name like '%' #{name} '%'
+            </if>
+            <if test="startDate != null and startDate != '' ">
+                and startDate &gt; #{startDate}
+            </if>
+            <if test="endDate != null and endDate != '' ">
+                and endDate &lt; #{endDate}
+            </if>
+        </where>
+        order by a.createTime DESC
+        LIMIT #{skipCount},#{pageSize}
+    </select>
+
+    <!--删除市场活动-->
+    <delete id="delete"  parameterType="int" >
+        delete from tbl_activity
+        where id in
+        <foreach collection="array" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--获取单条市场活动-->
+    <select id="getActivityById" resultType="Activity">
+        select * from tbl_activity where id = #{id}
+    </select>
+
+    <!--修改市场活动-->
+    <update id="updateActivity">
+        update tbl_activity set
+        owner = #{owner},
+        name = #{name},
+        startDate = #{startDate},
+        endDate = #{endDate},
+        cost = #{cost},
+        description = #{description},
+        editTime = #{editTime},
+        editBy = #{editBy}
+        where id = #{id}
+    </update>
+
+    <select id="getActivity" resultType="Activity" parameterType="String">
+        select
+            a.id,
+            u.name as owner,
+            a.name,
+            a.startDate,
+            a.endDate,
+            a.cost,
+            a.description,
+            a.createTime,
+            a.createBy,
+            a.editTime,
+            a.editBy
+        from tbl_activity as a
+        inner join tbl_user as u
+        on u.id = a.owner
+        where a.id = #{id}
+    </select>
+
+    <!--查询市场管理活动列表-->
+    <select id="getActivityListByCludId" resultType="com.ry.workbench.pojo.Activity">
+        select
+        car.id as id,
+        a.name,
+        a.startDate,
+        a.endDate,
+        u.name as owner
+        from tbl_activity as a
+        inner join tbl_user as u
+        on a.owner = u.id
+        inner join tbl_clue_activity_relation car
+        on a.id = car.activityId
+        where car.clueId = #{id}
+    </select>
+    <!--查询市场活动关联的列表 根据传来的活动id 不包括这些id的列表-->
+    <select id="getActivityBund" resultType="com.ry.workbench.pojo.Activity">
+        select
+        a.id,
+        a.name,
+        a.startDate,
+        a.endDate,
+        u.name as owner
+        from tbl_activity as a
+        inner join tbl_user as u
+        on a.owner = u.id
+        <where>
+            <if test="ids != null and ids.size()>0 ">
+                a.id not in
+                <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+                    #{item.activityId}
+                </foreach>
+            </if>
+
+
+            <if test="name != null and name != '' ">
+                and a.name like CONCAT('%',#{name},'%')
+            </if>
+        </where>
+
+    </select>
+    <!--查询线索转换页 市场活动列表-->
+    <select id="getConvertModelActivityList" resultType="com.ry.workbench.pojo.Activity">
+        select
+        a.id,
+        a.name,
+        a.startDate,
+        a.endDate,
+        u.name as owner
+        from tbl_activity as a
+        inner join tbl_user as u
+        on a.owner = u.id
+        <where>
+            <if test="name != null and name != '' ">
+                and a.name like CONCAT('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+
+    <!---->
+    <select id="getNameById" resultType="java.lang.String">
+        SELECT  NAME FROM tbl_activity  WHERE id = #{id}
+    </select>
+</mapper>

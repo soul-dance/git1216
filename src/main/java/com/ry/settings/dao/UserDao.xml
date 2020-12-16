@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ry.settings.dao.UserDao">
+    <!--登录-->
+<select id="login" resultType="User">
+    select * from tbl_user where loginAct = #{loginAct} AND loginPwd = #{loginPwd}
+</select>
+
+ <!--查询用户信息列表-->
+<select id="getUserList" resultType="User" >
+   select * from tbl_user
+</select>
+</mapper>

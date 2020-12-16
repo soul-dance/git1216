@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ry.workbench.dao.ClueDao">
+
+    <!--添加一条线索-->
+    <insert id="saveClue" parameterType="com.ry.workbench.pojo.Clue">
+        insert into tbl_clue(
+            id,fullname,appellation,owner,company,job, email, phone,website, mphone,state,
+            source,createBy,createTime,description,contactSummary, nextContactTime,address
+        ) value (
+            #{id},#{fullname},#{appellation},#{owner}, #{company},#{job},#{email},#{phone},#{website},#{mphone},#{state},
+            #{source},#{createBy}, #{createTime},#{description},#{contactSummary},#{nextContactTime},#{address}
+        )
+    </insert>
+
+    <!--多条件查询线索列表-->
+    <select id="searchClueList" resultType="com.ry.workbench.pojo.Clue">
+        select
+            a.id,
+            a.company,
+            a.mphone,
+            a.phone,
+            a.source,
+            u.name as owner,
+            a.fullname,
+            a.state
+            from tbl_clue as a
+            inner join tbl_user as u
+            on u.id = a.owner
+        <where>
+            <if test="fullname != null and fullname != ''">
+                and a.fullname like concat('%',#{fullname,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="company != null and company != ''">
+                and a.company like concat('%',#{company,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="mphone != null and mphone != ''">
+                and a.mphone like concat('%',#{mphone,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="phone != null and phone != ''">
+                and a.phone like concat('%',#{phone,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="source != null and source != ''">
+                and a.source like concat('%',#{source,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="state != null and state != ''">
+                and a.state like concat('%',#{state,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="owner != null and owner != ''">
+                and a.owner like concat('%',#{owner,jdbcType=VARCHAR},'%')
+            </if>
+        </where>
+        order by a.createTime DESC
+        LIMIT #{pageNo},#{pageSize}
+    </select>
+
+    <!--查询总条数-->
+    <select id="getClueListCount" resultType="java.lang.Integer">
+        select count(*)
+        from tbl_clue as a
+        inner join tbl_user as u
+        on u.id = a.owner
+        <where>
+            <if test="fullname != null and fullname != ''">
+                and a.fullname like concat('%',#{fullname,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="company != null and company != ''">
+                and a.company like concat('%',#{company,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="mphone != null and mphone != ''">
+                and a.mphone like concat('%',#{mphone,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="phone != null and phone != ''">
+                and a.phone like concat('%',#{phone,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="source != null and source != ''">
+                and a.source like concat('%',#{source,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="state != null and state != ''">
+                and a.state like concat('%',#{state,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="owner != null and owner != ''">
+                and u.name like concat('%',#{owner,jdbcType=VARCHAR},'%')
+            </if>
+        </where>
+        order by a.createTime DESC
+    </select>
+    <!--详情页-->
+    <select id="detail" resultType="com.ry.workbench.pojo.Clue" >
+        select a.id,a.fullname, a.appellation, u.name as owner, a.company, a.job,a.email,a.mphone, a.phone,a.website,
+        a.state, a.source,a.createBy, a.createTime, a.editBy,a.editTime, a.description,a.contactSummary,
+        a.nextContactTime, a.address
+        from tbl_clue as a
+        inner join tbl_user as u
+        on u.id = a.owner
+        where a.id = #{id}
+    </select>
+    <!--删除线索活动备注记录-->
+    <delete id="unbund">
+        delete from tbl_clue_activity_relation where id = #{id};
+    </delete>
+
+    <select id="getById" resultType="Clue">
+        select * from tbl_clue where id = #{id}
+    </select>
+
+    <!--删除线索记录-->
+    <delete id="delete">
+          delete from tbl_clue where id = #{id};
+    </delete>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

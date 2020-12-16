@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ry.workbench.dao.TranDao">
+    <!-- 获取列表 阶段 和 条数-->
+    <select id="getDateList" resultType="map">
+        select  count(*) as value,stage as name
+        from tbl_tran
+        group by stage
+    </select>
+
+
+    <!--获取总条数-->
+    <select id="getTotal" resultType="int">
+        select count(*) from tbl_tran;
+    </select>
+
+
+    <!--更新状态-->
+    <update id="changeStage">
+        update tbl_tran set stage = #{stage},editBy = #{editBy},editTime = #{editTime} where id = #{id}
+    </update>
+
+    <!--添加一条记录-->
+    <insert id="save">
+        insert  into tbl_tran(
+            id,
+            owner,
+            money,
+            name,
+            expectedDate,
+            customerId,
+            stage,
+            type,
+            source,
+            activityId,
+            contactsId,
+            createBy,
+            createTime,
+            description,
+            contactSummary,
+            nextContactTime
+
+        )values (
+            #{id},
+            #{owner},
+            #{money},
+            #{name},
+            #{expectedDate},
+            #{customerId},
+            #{stage},
+            #{type},
+            #{source},
+            #{activityId},
+            #{contactsId},
+            #{createBy},
+            #{createTime},
+            #{description},
+            #{contactSummary},
+            #{nextContactTime}
+        )
+    </insert>
+    <!--多条件查询-->
+    <select id="pageList" resultType="com.ry.workbench.pojo.Tran">
+        select
+        t.id,
+        t.name,
+        c.name as customerId,
+        t.stage,
+        t.type,
+        u.name as owner,
+        t.source,
+        con.fullname as contactsId
+        from tbl_tran as t
+        inner join tbl_user as u
+        on u.id = t.owner
+        inner join tbl_customer as c
+        on c.id = t.customerId
+        inner join tbl_contacts as con
+        on con.id = t.contactsId
+        <where>
+            <if test="tran.owner != null and tran.owner !='' ">
+                u.name like '%' #{tran.owner} '%'
+            </if>
+            <if test="tran.name != null and tran.name != '' ">
+                and t.name like '%' #{tran.name} '%'
+            </if>
+            <if test=" tran.customerId != null and tran.customerId != '' ">
+                and c.name like '%' #{tran.customerId} '%'
+            </if>
+            <if test=" tran.contactsId != null and tran.contactsId != '' ">
+                and con.fullname like '%' #{tran.contactsId} '%'
+            </if>
+            <if test="tran.stage != null and tran.stage != '' ">
+                and t.stage like '%' #{tran.stage} '%'
+            </if>
+            <if test="tran.type != null and tran.type != '' ">
+                and t.type like '%' #{tran.type} '%'
+            </if>
+            <if test="tran.source != null and tran.source != '' ">
+                and t.source like '%' #{tran.source} '%'
+            </if>
+        </where>
+        order by t.createTime DESC
+        LIMIT #{pageNo},#{pageSize}
+    </select>
+
+
+    <!--查询总条数-->
+    <select id="getTranCount" resultType="int">
+        select count(*) from tbl_tran as t
+        inner join tbl_user as u
+        on u.id = t.owner
+        inner join tbl_customer as c
+        on c.id = t.customerId
+        inner join tbl_contacts as con
+        on con.id = t.contactsId
+        <where>
+            <if test="owner != null and owner !='' ">
+                u.name like '%' #{owner} '%'
+            </if>
+            <if test="name != null and name != '' ">
+                and t.name like '%' #{name} '%'
+            </if>
+            <if test=" customerId != null and customerId != '' ">
+                and c.name like '%' #{customerId} '%'
+            </if>
+            <if test=" contactsId != null and contactsId != '' ">
+                and con.fullname like '%' #{contactsId} '%'
+            </if>
+            <if test="stage != null and stage != '' ">
+                and t.stage like '%' #{stage} '%'
+            </if>
+            <if test="type != null and type != '' ">
+                and t.type like '%' #{type} '%'
+            </if>
+            <if test="source != null and source != '' ">
+                and t.source like '%' #{source} '%'
+            </if>
+        </where>
+        order by t.createTime DESC
+    </select>
+
+    <!--获取联系人列表 交易添加页-->
+    <select id="getConvertModelContactList" resultType="com.ry.workbench.pojo.Contacts">
+        select
+        c.id,
+        c.fullname,
+        u.name as owner,
+        c.email,
+        c.mphone
+        from tbl_contacts as c
+        inner join tbl_user as u
+        on c.owner = u.id
+        <where>
+            <if test="name != null and name != '' ">
+                and u.name like CONCAT('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+
+    <!--获取单条交易的详细信息-->
+    <select id="detail" resultType="Tran">
+        select  * from tbl_tran where id = #{id}
+    </select>
+
+    <!--更新交易-->
+    <update id="updateTran">
+        update tbl_tran
+            set owner = #{owner},
+            money = #{money},
+            name = #{name},
+            expectedDate = #{expectedDate},
+            customerId = #{customerId},
+            stage = #{stage},
+            type = #{type},
+            source = #{source},
+            activityId = #{activityId},
+            contactsId = #{contactsId},
+            editBy = #{editBy},
+            editTime = #{editTime},
+            description = #{description},
+            contactSummary = #{contactSummary},
+            nextContactTime = #{nextContactTime}
+        where id = #{id}
+    </update>
+
+    <select id="getDetail" resultType="com.ry.workbench.pojo.Tran">
+        select
+        t.id,
+        u.name as owner,
+        t.money,
+        t.name,
+        t.expectedDate,
+        c.name as customerId,
+        t.stage,
+        t.type,
+        t.source,
+        a.name as  activityId,
+        con.fullname as contactsId,
+        t.createBy,
+        t.createTime,
+        t.editBy,
+        t.editTime,
+        t.description,
+        t.contactSummary,
+        t.nextContactTime
+        from tbl_tran as t
+        inner join tbl_user as u
+        on u.id = t.owner
+        inner join tbl_customer as c
+        on c.id = t.customerId
+        left join tbl_contacts as con
+        on con.id = t.contactsId
+        left join tbl_activity as a
+        on a.id = t.activityId
+
+        where t.id = #{id}
+    </select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

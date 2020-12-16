@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-4.0.xsd
+        http://www.springframework.org/schema/mvc
+        https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!--Springmvc配置文件,用来声明controller和相关web对象-->
+    <!--
+        ******响应ajax请求,返回json用到******
+        处理静态资源访问需要用到
+        -->
+    <mvc:annotation-driven/>
+    <!--用户控制器-->
+    <context:component-scan base-package="com.ry.settings.web.controller"/>
+    <!--市场活动控制器-->
+    <context:component-scan base-package="com.ry.workbench.web.controller"/>
+    <!--组件扫描器-->
+    <context:component-scan base-package="com.ry.settings.handle"/>
+
+
+    <!--视图解析器-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+<!--        &lt;!&ndash;前缀&ndash;&gt;-->
+<!--        <property name="prefix" value="/WEB-INF/view/"/>-->
+        <!--后缀-->
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+
+    <!-- 图片,HTML静态资源访问处理 -->
+    <mvc:default-servlet-handler/>
+    <!--声明拦截器-->
+   <mvc:interceptors>
+        <!--声明第一个拦截器-->
+        <mvc:interceptor>
+            <!--指定拦截请求的uri地址-->
+            <mvc:mapping path="/**"/>
+            <!--声明拦截器对象-->
+            <bean id = "myInterceptor" class="com.ry.settings.handle.MyInterceptor"></bean>
+        </mvc:interceptor>
+
+    </mvc:interceptors>
+
+
+
+</beans>

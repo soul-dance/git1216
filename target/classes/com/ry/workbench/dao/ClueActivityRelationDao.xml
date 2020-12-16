@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ry.workbench.dao.ClueActivityRelationDao">
+
+    <delete id="delete">
+        delete from tbl_clue_activity_relation where id = #{id}
+    </delete>
+    <!--查询线索id对应的所有市场活动-->
+	<select id="getRelationById"  resultType="com.ry.workbench.pojo.ClueActivityRelation">
+        select * from tbl_clue_activity_relation where clueId = #{id}
+    </select>
+
+    <!--添加市场活动联系表-->
+    <insert id="addActivityBund">
+        insert into tbl_clue_activity_relation(id,clueId,activityId)
+        values
+        <foreach collection="list" item="item"  separator="," >
+            (#{item.id},#{item.clueId},#{item.activityId})
+        </foreach>
+    </insert>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
